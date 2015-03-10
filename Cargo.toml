@@ -34,7 +34,8 @@ git = "https://github.com/pistondevelopers/image"
 #version = "~0.2.0"
 
 [dependencies.shader_version]
-git = "https://github.com/pistondevelopers/shader_version"
+git = "https://github.com/AerialX/shader_version"
+branch = "emscripten"
 #version = "0.0.2"
 
 [dependencies.freetype-rs]
