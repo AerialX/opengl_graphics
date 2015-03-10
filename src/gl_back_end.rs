@@ -19,7 +19,11 @@ use shader_utils::{
 use Texture;
 
 static VS_COLORED_120: &'static str = "
+#ifndef GL_ES
 #version 120
+#else
+precision mediump float;
+#endif
 uniform vec4 color;
 
 attribute vec4 pos;
@@ -43,7 +47,11 @@ void main()
 ";
 
 static FS_COLORED_120: &'static str = "
+#ifndef GL_ES
 #version 120
+#else
+precision mediump float;
+#endif
 uniform vec4 color;
 
 void main()
@@ -65,7 +73,11 @@ void main()
 ";
 
 static VS_TEXTURED_120: &'static str = "
+#ifndef GL_ES
 #version 120
+#else
+precision mediump float;
+#endif
 uniform vec4 color;
 
 attribute vec4 pos;
@@ -101,7 +113,12 @@ void main()
 ";
 
 static FS_TEXTURED_120: &'static str = "
+#ifndef GL_ES
 #version 120
+#else
+precision mediump float;
+#endif
+
 uniform vec4 color;
 uniform sampler2D s_texture;
 
@@ -132,7 +149,8 @@ fn pick_120_150<T>(glsl: glsl::GLSL, for_120: T, for_150: T) -> T {
     use shader_version::glsl::GLSL;
     match glsl {
         GLSL::_1_10 => panic!("GLSL 1.10 not supported"),
-        GLSL::_1_20
+        GLSL::ES_1_00
+      | GLSL::_1_20
       | GLSL::_1_30
       | GLSL::_1_40 => for_120,
         _ => for_150,
@@ -182,8 +200,10 @@ impl Colored {
             gl::AttachShader(program, vertex_shader);
             gl::AttachShader(program, fragment_shader);
 
-            gl::BindFragDataLocation(program, 0,
-                CString::new("out_color".as_bytes()).unwrap().as_ptr());
+            if pick_120_150(glsl, false, true) {
+                gl::BindFragDataLocation(program, 0,
+                    CString::new("out_color".as_bytes()).unwrap().as_ptr());
+            }
         }
 
         let mut vao = 0;
@@ -258,8 +278,10 @@ impl Textured {
             gl::AttachShader(program, vertex_shader);
             gl::AttachShader(program, fragment_shader);
 
-            gl::BindFragDataLocation(program, 0,
-                CString::new("out_color".as_bytes()).unwrap().as_ptr());
+            if pick_120_150(glsl, false, true) {
+                gl::BindFragDataLocation(program, 0,
+                    CString::new("out_color".as_bytes()).unwrap().as_ptr());
+            }
         }
 
         let mut vao = 0;
